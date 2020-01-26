@@ -13,12 +13,13 @@
                     <MenuItem Header="_Open image" Click="MenuItem_Click"/>
                 </MenuItem>
                 <MenuItem Header="_Edit">
-                    <MenuItem Header="_Detect rectangles"/>
+                    <MenuItem Header="_Detect rectangles" Click="DetectRectangles"/>
                 </MenuItem>
                 <MenuItem Header="_Filtering">
-                    <MenuItem Header="_Brightness filter"/>
-                    <MenuItem Header="_Contrast filter"/>
-                    <MenuItem Header="_Conture detection"/>
+                    <MenuItem Header="_Brightness filter / Increase" Click="BrightnessFilterIncrease"/>
+                    <MenuItem Header="_Brightness filter / Decrease" Click="BrightnessFilterDecrease"/>
+                    <MenuItem Header="_Contrast filter" Click="ContrastFilter"/>
+                    <MenuItem Header="_Conture detection" Click="ContureFilter"/>
                 </MenuItem>
             </Menu>
             <Grid>
