@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,23 @@ namespace computer_vision_emgucv
     /// </summary>
     public partial class MainWindow : Window
     {
+        private string ImagePath;
+        private BitmapImage ImageBitmap;
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.Filter = "Image Files (*.bmp;*.jpg;*.jpeg,*.png)|*.BMP;*.JPG;*.JPEG;*.PNG";
+            if (dialog.ShowDialog() == true)
+            {
+                this.ImagePath = dialog.FileName;
+                this.ImageBitmap = new BitmapImage(new Uri(this.ImagePath));
+                ImageContainer.Source = this.ImageBitmap;
+            }
         }
     }
 }

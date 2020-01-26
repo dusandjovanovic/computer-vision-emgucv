@@ -7,6 +7,27 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open image" Click="MenuItem_Click"/>
+                </MenuItem>
+                <MenuItem Header="_Edit">
+                    <MenuItem Header="_Detect rectangles"/>
+                </MenuItem>
+                <MenuItem Header="_Filtering">
+                    <MenuItem Header="_Brightness filter"/>
+                    <MenuItem Header="_Contrast filter"/>
+                    <MenuItem Header="_Conture detection"/>
+                </MenuItem>
+            </Menu>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100*" />
+                </Grid.RowDefinitions>
 
+                <Image Name="ImageContainer" Grid.Row="0" Stretch="Fill" />
+            </Grid>
+        </DockPanel>
     </Grid>
 </Window>
