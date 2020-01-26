@@ -1,0 +1,33 @@
+﻿<Window x:Class="ComputerVisionApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ComputerVisionApp"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Open image" Click="MenuItem_Click"/>
+                </MenuItem>
+                <MenuItem Header="_Edit">
+                    <MenuItem Header="_Detect rectangles"/>
+                </MenuItem>
+                <MenuItem Header="_Filtering">
+                    <MenuItem Header="_Brightness filter"/>
+                    <MenuItem Header="_Contrast filter"/>
+                    <MenuItem Header="_Conture detection"/>
+                </MenuItem>
+            </Menu>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100*" />
+                </Grid.RowDefinitions>
+
+                <Image Name="ImageContainer" Grid.Row="0" Stretch="Fill" />
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Window>
