@@ -6,7 +6,7 @@ Implementirane funkcionalnosti:
 1) Brightness filter
 2) Contrast filter
 3) Filter za detekciju kontura na slici
-4) Detekcija svih pravougaonike određene boje. Omogućiti korisniku da učita proizvoljnu sliku, da izabere boju i minimalnu veličini pravougaonika.
+4) Detekcija svih pravougaonike određene boje. Omogućiti korisniku da učita proizvoljnu sliku, da izabere boju i minimalnu veličinu pravougaonika.
 
 ## Korisnički interfejs
 
