@@ -105,7 +105,7 @@ foreach (RotatedRect box in rectangleList)
 #endregion
 ```
 
-Slično kao u prošlom filteru, prvo se pronalaze sve konture na slici. Zatim, treba uzeti u obzir samo one konture koje su **veće površine od zadate** - površina se računa za svaku konturu u ovom koraku. Nakon toga, treba razmotriti samo **konture koje imaju četiri temena**. Na kraju, treba proveriti da li su **uglovi između temena u opsegu [80, 100] stepeni** i da li **kontura odgovara zadatoj boji**.
+Slično kao u prošlom primeru, prvo se pronalaze sve konture na slici. Osnova je ponovno b&w slika, s tim što je u ovom slučaju na početku urađeno i **filtriranje boja** kako bi se razmatrali samo pravouganici odgovarajuće boje. Zatim, treba uzeti u obzir samo one konture koje su **veće površine od zadate** - površina se računa za svaku konturu u ovom koraku. Nakon toga, treba razmotriti samo **konture koje imaju četiri temena**. Na kraju, treba proveriti da li su **uglovi između temena u opsegu [80, 100] stepeni**.
 
 Lista kontura koje odgovaraju uslovima se iscrtava na crnoj pozadini.
 
