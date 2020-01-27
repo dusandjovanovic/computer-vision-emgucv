@@ -10,7 +10,7 @@ Implementirane funkcionalnosti:
 
 ## Korisnički interfejs
 
-Većina akcija se nalazi u toolbar meniju. Izborom `File -> Open` se učitava slika koja se prikazuje. Filteri su dostupni u `Filtering` meniju. Recimo, `Filtering -> Brightness filter / Increase` primenjuje filter povećanja osvetljenja, slično `Filtering -> Contrast filter` primenjuje filter promene kontrasta. Filteri mogu da se kombinuju. `Edit -> Triangle detection` je komanda za detekciju pravougaonika i iscrtavanje pronadjenih koji odgovaraju podešavanjima. U statusbar-u se biraju **boja i površina (u px)** ovih pravouganika.
+Većina akcija se nalazi u toolbar meniju. Izborom `File -> Open` se učitava slika koja se prikazuje. Filteri su dostupni u `Filtering` meniju. Recimo, `Filtering -> Brightness filter / Increase` primenjuje filter povećanja osvetljenja, slično `Filtering -> Contrast filter` primenjuje filter promene kontrasta. Filteri mogu da se kombinuju. `Edit -> Triangle detection` je komanda za detekciju pravougaonika i iscrtavanje onih koji odgovaraju podešavanjima. U statusbar-u se biraju podešavanja, odnosno **boja i površina (px)** ovih pravouganika.
 
 ![alt text][screenshot-none]
 
@@ -20,7 +20,7 @@ Većina akcija se nalazi u toolbar meniju. Izborom `File -> Open` se učitava sl
 
 `Filtering -> Brightness filter / Increase` se koristi za primenu filtera povećavanja osvetljena, o slično tome `Filtering -> Brightness filter / Decrease` za smanjenje. `Filtering -> Contrast filter` menja kontrast slike.
 
-Za promenu osveteljenja poziva se `_GammaCorrect(value);` API, a za promenu kontrasta `_EqualizeHist();` kojim se normalizuje osvetljenje i povećava kontrast.
+Za promenu osveteljenja poziva se `_GammaCorrect(value)` API nad slikom, a za promenu kontrasta `_EqualizeHist()` kojim se normalizuje osvetljenje i povećava kontrast.
 
 ![alt text][screenshot-brightness]
 
@@ -47,7 +47,7 @@ CvInvoke.DrawContours(returnImage, contours, -1, new MCvScalar(255, 0, 0));
 return Bitmap2BitmapImage(returnImage.Bitmap);
 ```
 
-Za detekciju kontura je neophodno klonirati sliku u **grayscale obliku**. Zatim, koristeći metodu pronalaženja kontura `ChainApproxMethod.ChainApproxSimple` detektovati prisutne konture na slici (i iscrtati ih naknadno). Za detekciju se koristi poziv `CvInvoke.FindContours`.
+Za detekciju kontura je neophodno klonirati sliku u **grayscale oblik**. Zatim, koristeći metodu pronalaženja kontura `ChainApproxMethod.ChainApproxSimple` detektovati prisutne konture na slici (i iscrtati ih naknadno). Za detekciju se koristi poziv `CvInvoke.FindContours`.
 
 ![alt text][screenshot-conture]
 
@@ -58,6 +58,16 @@ Za detekciju kontura je neophodno klonirati sliku u **grayscale obliku**. Zatim,
 `Edit -> Triangle detection` se koristi za detekciju pravouganika. Pre primene je neophodno navesti boju i minimalnu površinu pravouganika u px. Boja se bira color-picker elementom u statusbar-u (izabrana je crna), a površina se navodi pored (navedeno je 8000px).
 
 ```c#
+Image<Bgr, Byte> tempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
+
+#region color filtering
+Image<Bgr, Byte> coloredImage = tempImage.PyrDown().PyrUp();
+coloredImage._SmoothGaussian(3);
+Image<Gray, Byte> bwImage = coloredImage.InRange(new Bgr(colorBlue, colorGreen, colorRed), new Bgr(colorBlue, colorGreen, colorRed));
+#endregion
+
+List<RotatedRect> rectangleList = new List<RotatedRect>(); //a box is a rotated rectangle
+
 #region find rectangles by contoure detection
 using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
 {
@@ -107,13 +117,13 @@ foreach (RotatedRect box in rectangleList)
 
 Slično kao u prošlom primeru, prvo se pronalaze sve konture na slici. Osnova je ponovno **grayscale slika**, s tim što je u ovom slučaju na početku urađeno i **filtriranje boja** kako bi se razmatrali samo pravouganici odgovarajuće boje. Zatim, treba uzeti u obzir samo one konture koje su **veće površine od zadate** - površina se računa za svaku konturu u ovom koraku. Nakon toga, treba razmotriti samo **konture koje imaju četiri temena**. Na kraju, treba proveriti da li su **uglovi između temena u opsegu [80, 100] stepeni**.
 
-Lista kontura koje odgovaraju uslovima se iscrtava na crnoj pozadini.
+Zatim, lista kontura koje odgovaraju uslovima se iscrtava na crnoj pozadini.
 
 ![alt text][screenshot-triangles]
 
 [screenshot-triangles]: meta/screenshot-triangles.png
 
-Podešavanja su boja-crna, minimalna površina-8000px. Na slici u primeru, svi pravouganici osim jednog su crne boje. Međutim, najmanji pravouganik crne boje ne zadovoljava uslov minimalne površine jer je njegova površina oko 5000px. Na kraju, preko crne pozadine su iscrtani svi prepoznati pravouganici.
+Podešavanja su boja-crna, minimalna površina-8000px. Na slici u primeru, svi pravouganici osim jednog su crne boje. Međutim, najmanji pravouganik crne boje ne zadovoljava uslov minimalne površine jer je njegova površina oko 5000px. Na kraju, kao što se može videti na poslednjoj slici, preko crne pozadine su iscrtani svi prepoznati pravouganici.
 
 ![alt text][screenshot-triangles-result]
 
