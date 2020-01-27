@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ComputerVisionApp"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
@@ -22,6 +23,15 @@
                     <MenuItem Header="_Conture detection" Click="ContureFilter"/>
                 </MenuItem>
             </Menu>
+
+            <StatusBar DockPanel.Dock="Bottom">
+                <StatusBarItem>
+                    <TextBox Name="AreaTextBox" PreviewTextInput="NumberValidationTextBox" Text="250" TextChanged="AreaTextBox_TextChanged" Width="60" Height="22"/>
+                </StatusBarItem>
+
+                <xctk:ColorPicker Name="ColorPicker" Width="120" Height="22" DisplayColorAndName="True" SelectedColorChanged="ColorPicker_ColorChanged" AvailableColorsSortingMode="HueSaturationBrightness"/>
+            </StatusBar>
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="100*" />

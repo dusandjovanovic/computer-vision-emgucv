@@ -6,6 +6,9 @@ using System.IO;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using System.Drawing.Imaging;
+using Emgu.CV.Util;
+using System.Collections.Generic;
+using Emgu.CV.CvEnum;
 
 namespace ComputerVisionApp
 {
@@ -29,13 +32,13 @@ namespace ComputerVisionApp
 
         private static BitmapImage Bitmap2BitmapImage(Bitmap bitmap)
         {
-            using (var memory = new MemoryStream())
+            using (MemoryStream outStream = new MemoryStream())
             {
-                bitmap.Save(memory, ImageFormat.Png);
-                memory.Position = 0;
+                bitmap.Save(outStream, ImageFormat.Png);
+                outStream.Position = 0;
                 var bitmapImage = new BitmapImage();
                 bitmapImage.BeginInit();
-                bitmapImage.StreamSource = memory;
+                bitmapImage.StreamSource = outStream;
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
@@ -60,30 +63,87 @@ namespace ComputerVisionApp
 
         public static BitmapImage ImageChangeBrightness(BitmapImage Image, double value)
         {
-            Image<Bgr, Byte> TempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
-            TempImage._GammaCorrect(value);
-            return Bitmap2BitmapImage(TempImage.Bitmap);
+            Image<Bgr, Byte> tempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
+            tempImage._GammaCorrect(value);
+
+            return Bitmap2BitmapImage(tempImage.Bitmap);
         }
 
         public static BitmapImage ImageChangeContrast(BitmapImage Image)
         {
-            Image<Bgr, Byte> TempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
-            TempImage._EqualizeHist();
-            return Bitmap2BitmapImage(TempImage.Bitmap);
+            Image<Bgr, Byte> tempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
+            tempImage._EqualizeHist();
+
+            return Bitmap2BitmapImage(tempImage.Bitmap);
         }
 
         public static BitmapImage ImageDetectContours(BitmapImage Image)
         {
-            Image<Bgr, Byte> TempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
-            Image<Gray, byte> ImageOutput = TempImage.Convert<Gray, byte>().ThresholdBinary(new Gray(100), new Gray(255));
-            Emgu.CV.Util.VectorOfVectorOfPoint contours = new Emgu.CV.Util.VectorOfVectorOfPoint();
+            Image<Bgr, Byte> tempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
+            Image<Gray, byte> bwImage = tempImage.Convert<Gray, byte>().ThresholdBinary(new Gray(100), new Gray(255));
+            Image<Gray, byte> returnImage = new Image<Gray, byte>(tempImage.Width, tempImage.Height, new Gray(0));
+
+            VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
             Mat hier = new Mat();
+            CvInvoke.FindContours(bwImage, contours, hier, RetrType.External, ChainApproxMethod.ChainApproxSimple);
+            CvInvoke.DrawContours(returnImage, contours, -1, new MCvScalar(255, 0, 0));
 
-            Image<Gray, byte> ImageReturn = new Image<Gray, byte>(TempImage.Width, TempImage.Height, new Gray(0));
-            CvInvoke.FindContours(ImageOutput, contours, hier, Emgu.CV.CvEnum.RetrType.External, Emgu.CV.CvEnum.ChainApproxMethod.ChainApproxSimple);
-            CvInvoke.DrawContours(ImageReturn, contours, -1, new MCvScalar(255, 0, 0));
+            return Bitmap2BitmapImage(returnImage.Bitmap);
+        }
 
-            return Bitmap2BitmapImage(ImageReturn.Bitmap);
+        public static BitmapImage ImageDetectRectangles(BitmapImage Image, double area, long color)
+        {
+            Image<Bgr, Byte> tempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
+            Image<Gray, byte> bwImage = tempImage.Convert<Gray, byte>().ThresholdBinary(new Gray(100), new Gray(255));
+
+            List<RotatedRect> rectangleList = new List<RotatedRect>(); //a box is a rotated rectangle
+
+            #region find rectangles by contoure detection
+            using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
+            {
+                CvInvoke.FindContours(bwImage, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
+                int count = contours.Size;
+                for (int i = 0; i < count; i++)
+                {
+                    using (VectorOfPoint contour = contours[i])
+                    using (VectorOfPoint approxContour = new VectorOfPoint())
+                    {
+                        CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.05, true);
+                        if (CvInvoke.ContourArea(approxContour, false) > area) // only consider contours with area greater than "area"
+                        {
+                            if (approxContour.Size == 4) // contour has 4 vertices.
+                            {
+                                #region determine if all the angles in the contour are within [80, 100] degree
+                                bool isRectangle = true;
+                                Point[] pts = approxContour.ToArray();
+                                LineSegment2D[] edges = PointCollection.PolyLine(pts, true);
+                                for (int j = 0; j < edges.Length; j++)
+                                {
+                                    double angle = Math.Abs(
+                                       edges[(j + 1) % edges.Length].GetExteriorAngleDegree(edges[j]));
+                                    if (angle < 80 || angle > 100)
+                                    {
+                                        isRectangle = false;
+                                        break;
+                                    }
+                                }
+                                #endregion
+
+                                if (isRectangle) rectangleList.Add(CvInvoke.MinAreaRect(approxContour));
+                            }
+                        }
+                    }
+                }
+            }
+            #endregion
+
+            #region draw rectangles on-top of source image
+            Image<Bgr, Byte> triangleRectangleImage = tempImage.CopyBlank();
+            foreach (RotatedRect box in rectangleList)
+                triangleRectangleImage.Draw(box, new Bgr(Color.DarkMagenta), 2);
+            #endregion
+
+            return Bitmap2BitmapImage(triangleRectangleImage.Bitmap);
         }
     }
 }
