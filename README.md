@@ -113,7 +113,7 @@ Lista kontura koje odgovaraju uslovima se iscrtava na crnoj pozadini.
 
 [screenshot-triangles]: meta/screenshot-triangles.png
 
-Na slici u primeru, svi pravouganici su crne boje. Međutim, najmanji pravouganik ne zadovoljava uslov minimalne površine jer mu je površina ~4/5000px. Na kraju, preko crne pozadine su iscrtani svi prepoznati pravouganici u boji magenta.
+Podešavanja su boja-crna, minimalna površina-8000px. Na slici u primeru, svi pravouganici osim jednog su crne boje. Međutim, najmanji pravouganik crne boje ne zadovoljava uslov minimalne površine jer je njegova površina oko 5000px. Na kraju, preko crne pozadine su iscrtani svi prepoznati pravouganici.
 
 ![alt text][screenshot-triangles-result]
 
