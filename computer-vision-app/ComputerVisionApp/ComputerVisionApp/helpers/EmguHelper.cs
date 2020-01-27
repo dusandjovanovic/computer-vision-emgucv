@@ -91,10 +91,15 @@ namespace ComputerVisionApp
             return Bitmap2BitmapImage(returnImage.Bitmap);
         }
 
-        public static BitmapImage ImageDetectRectangles(BitmapImage Image, double area, long color)
+        public static BitmapImage ImageDetectRectangles(BitmapImage Image, double area, long colorRed, long colorGreen, long colorBlue)
         {
             Image<Bgr, Byte> tempImage = new Image<Bgr, Byte>(BitmapImage2Bitmap(Image));
-            Image<Gray, byte> bwImage = tempImage.Convert<Gray, byte>().ThresholdBinary(new Gray(100), new Gray(255));
+
+            #region color filtering
+            Image<Bgr, Byte> coloredImage = tempImage.PyrDown().PyrUp();
+            coloredImage._SmoothGaussian(3);
+            Image<Gray, Byte> bwImage = coloredImage.InRange(new Bgr(colorBlue, colorGreen, colorRed), new Bgr(colorBlue, colorGreen, colorRed));
+            #endregion
 
             List<RotatedRect> rectangleList = new List<RotatedRect>(); //a box is a rotated rectangle
 

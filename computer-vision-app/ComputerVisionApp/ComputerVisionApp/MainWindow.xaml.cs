@@ -14,7 +14,9 @@ namespace ComputerVisionApp
         private BitmapImage ImageBitmap;
 
         private double RectangleArea = 250;
-        private long RectangleColor = 0;
+        private long ColorRed = 0;
+        private long ColorGreen = 0;
+        private long ColorBlue = 0;
 
         public MainWindow()
         {
@@ -49,10 +51,9 @@ namespace ComputerVisionApp
             if (ColorPicker.SelectedColor.HasValue)
             {
                 Color C = ColorPicker.SelectedColor.Value;
-                Byte Red = C.R;
-                Byte Green = C.G;
-                Byte Blue = C.B;
-                this.RectangleColor = Convert.ToInt64(Blue * (Math.Pow(256, 0)) + Green * (Math.Pow(256, 1)) + Red * (Math.Pow(256, 2)));
+                ColorRed = Convert.ToInt64(C.R * (Math.Pow(256, 0)));
+                ColorGreen = Convert.ToInt64(C.G * (Math.Pow(256, 0)));
+                ColorBlue = Convert.ToInt64(C.B * (Math.Pow(256, 0)));
             }
 
         }
@@ -83,7 +84,7 @@ namespace ComputerVisionApp
 
         private void DetectRectangles(object sender, RoutedEventArgs e)
         {
-            this.ImageBitmap = EmguHelper.ImageDetectRectangles(this.ImageBitmap, this.RectangleArea, this.RectangleColor);
+            this.ImageBitmap = EmguHelper.ImageDetectRectangles(this.ImageBitmap, this.RectangleArea, this.ColorRed, this.ColorGreen, this.ColorBlue);
             ImageContainer.Source = this.ImageBitmap;
         }
     }
