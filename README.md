@@ -36,7 +36,7 @@ Slično, ovo je slika sa promenjenim kontrastom. Filteri su u ovom slučaju komb
 
 ## Detekcija kontura
 
-`Filtering -> Conture detection` filter se koristi za detekciju kontura na slici. Rezultat je b&w slika sa iscrtanim konturama u beloj boji.
+`Filtering -> Conture detection` filter se koristi za detekciju kontura na slici. Rezultat je grayscale slika sa iscrtanim konturama u beloj boji.
 
 ```c#
 VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
@@ -47,7 +47,7 @@ CvInvoke.DrawContours(returnImage, contours, -1, new MCvScalar(255, 0, 0));
 return Bitmap2BitmapImage(returnImage.Bitmap);
 ```
 
-Za detekciju kontura je neophodno klonirati sliku u b&w režimu boja. Zatim, koristeći metodu pronalaženja kontura `ChainApproxMethod.ChainApproxSimple` detektovati prisutne konture na slici (i iscrtati ih naknadno). Za detekciju se koristi poziv `CvInvoke.FindContours`.
+Za detekciju kontura je neophodno klonirati sliku u **grayscale obliku**. Zatim, koristeći metodu pronalaženja kontura `ChainApproxMethod.ChainApproxSimple` detektovati prisutne konture na slici (i iscrtati ih naknadno). Za detekciju se koristi poziv `CvInvoke.FindContours`.
 
 ![alt text][screenshot-conture]
 
@@ -105,7 +105,7 @@ foreach (RotatedRect box in rectangleList)
 #endregion
 ```
 
-Slično kao u prošlom primeru, prvo se pronalaze sve konture na slici. Osnova je ponovno b&w slika, s tim što je u ovom slučaju na početku urađeno i **filtriranje boja** kako bi se razmatrali samo pravouganici odgovarajuće boje. Zatim, treba uzeti u obzir samo one konture koje su **veće površine od zadate** - površina se računa za svaku konturu u ovom koraku. Nakon toga, treba razmotriti samo **konture koje imaju četiri temena**. Na kraju, treba proveriti da li su **uglovi između temena u opsegu [80, 100] stepeni**.
+Slično kao u prošlom primeru, prvo se pronalaze sve konture na slici. Osnova je ponovno **grayscale slika**, s tim što je u ovom slučaju na početku urađeno i **filtriranje boja** kako bi se razmatrali samo pravouganici odgovarajuće boje. Zatim, treba uzeti u obzir samo one konture koje su **veće površine od zadate** - površina se računa za svaku konturu u ovom koraku. Nakon toga, treba razmotriti samo **konture koje imaju četiri temena**. Na kraju, treba proveriti da li su **uglovi između temena u opsegu [80, 100] stepeni**.
 
 Lista kontura koje odgovaraju uslovima se iscrtava na crnoj pozadini.
 
