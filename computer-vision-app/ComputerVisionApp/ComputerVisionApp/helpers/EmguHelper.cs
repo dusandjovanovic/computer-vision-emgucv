@@ -109,7 +109,8 @@ namespace ComputerVisionApp
                     using (VectorOfPoint approxContour = new VectorOfPoint())
                     {
                         CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.05, true);
-                        if (CvInvoke.ContourArea(approxContour, false) > area) // only consider contours with area greater than "area"
+                        double contourArea = CvInvoke.ContourArea(approxContour, false);
+                        if (contourArea > area) // only consider contours with area greater than "area"
                         {
                             if (approxContour.Size == 4) // contour has 4 vertices.
                             {
