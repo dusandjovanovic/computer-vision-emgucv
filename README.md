@@ -47,7 +47,7 @@ CvInvoke.DrawContours(returnImage, contours, -1, new MCvScalar(255, 0, 0));
 return Bitmap2BitmapImage(returnImage.Bitmap);
 ```
 
-Za detekciju kontura je neophodno klonirati sliku u b&w režimu boja. Zatim, koristeći metodu pronalaženja kontura `ChainApproxMethod.ChainApproxSimple` detektovati prisutne konture na slici (i iscrtati ih naknadno).
+Za detekciju kontura je neophodno klonirati sliku u b&w režimu boja. Zatim, koristeći metodu pronalaženja kontura `ChainApproxMethod.ChainApproxSimple` detektovati prisutne konture na slici (i iscrtati ih naknadno). Za detekciju se koristi poziv `CvInvoke.FindContours`.
 
 ![alt text][screenshot-conture]
 
@@ -72,7 +72,7 @@ using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
             double contourArea = CvInvoke.ContourArea(approxContour, false);
             if (contourArea > area) // only consider contours with area greater than "area"
             {
-                if (approxContour.Size == 4) // contour has 4 vertices.
+                if (approxContour.Size == 4) // contour has 4 vertices
                 {
                     #region determine if all the angles in the contour are within [80, 100] degree
                     bool isRectangle = true;
@@ -105,11 +105,15 @@ foreach (RotatedRect box in rectangleList)
 #endregion
 ```
 
+Slično kao u prošlom filteru, prvo se pronalaze sve konture na slici. Zatim, treba uzeti u obzir samo one konture koje su **veće površine od zadate** - površina se računa za svaku konturu u ovom koraku. Nakon toga, treba razmotriti samo **konture koje imaju četiri temena**. Na kraju, treba proveriti da li su **uglovi između temena u opsegu [80, 100] stepeni** i da li **kontura odgovara zadatoj boji**.
+
+Lista kontura koje odgovaraju uslovima se iscrtava na crnoj pozadini.
+
 ![alt text][screenshot-triangles]
 
 [screenshot-triangles]: meta/screenshot-triangles.png
 
-Na slici su svi pravouganici crne boje, međutim najmanji pravouganik ne zadovoljava uslov minimalne površine jer mu je površina ~4-5000px. Na kraju, preko crne pozadine su iscrtani svi prepoznati pravouganici u boji magenta.
+Na slici u primeru, svi pravouganici su crne boje. Međutim, najmanji pravouganik ne zadovoljava uslov minimalne površine jer mu je površina ~4/5000px. Na kraju, preko crne pozadine su iscrtani svi prepoznati pravouganici u boji magenta.
 
 ![alt text][screenshot-triangles-result]
 
